@@ -1,5 +1,5 @@
 /**
- * styled-components RatioBox@0.1.0 by sorosora
+ * styled-components RatioBox@0.2.0 by sorosora
  */
 
 import React from 'react';
@@ -23,23 +23,23 @@ const RatioWrapper = styled.div`
     bottom: 0;
   }
   
-  ${({ theme }) => theme.media.tablet(css`
+  ${({ theme }) => theme.media.tablet} {
     padding-bottom: ${({ height }) => (height && height[1] ? checkBreak(height[1], 0) : '')};
     height: ${({ height }) => (height && height[1] === 'break' ? 'auto' : '')};;
     
     ${RatioContainer} {
       position: ${({ height }) => (height && height[1] === 'break' ? 'relative' : '')};;
     }
-  `)};
+  }
   
-  ${({ theme }) => theme.media.phone(css`
+  ${({ theme }) => theme.media.phone} {
     padding-bottom: ${({ height }) => (height && height[2] ? checkBreak(height[2], 0) : '')};
     height: ${({ height }) => (height && height[2] === 'break' ? 'auto' : '')};;
     
     ${RatioContainer} {
       position: ${({ height }) => (height && height[2] === 'break' ? 'relative' : 'absolute')};;
     }
-  `)};
+  }
 `;
 
 const RatioBox = (props) => {

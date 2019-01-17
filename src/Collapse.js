@@ -1,5 +1,5 @@
 /**
- * styled-components Collapse@0.1.0 by sorosora
+ * styled-components Collapse@0.2.0 by sorosora
  */
 
 import React from 'react';
@@ -33,15 +33,15 @@ const ExpandableWrapper = styled.div`
   max-height: ${({ enabled: [enabled], active, maxHeight: [maxHeight] }) =>
     maxHeightStyle(enabled, active, maxHeight)};
   
-  ${({ theme }) => theme.media.tablet(css`
+  ${({ theme }) => theme.media.tablet} {
     max-height: ${({ enabled: [, enabled], active, maxHeight: [, maxHeight] }) =>
     maxHeightStyle(enabled, active, maxHeight)};
-  `)};
+  }
     
-  ${({ theme }) => theme.media.phone(css`
+  ${({ theme }) => theme.media.phone} {
     max-height: ${({ enabled: [, , enabled], active, maxHeight: [, , maxHeight] }) =>
     maxHeightStyle(enabled, active, maxHeight)};
-  `)};
+  }
 `;
 
 const ClickableWrapper = styled.div`
