@@ -1,8 +1,9 @@
 /**
- * styled-components Img@0.1.2 by sorosora
+ * styled-components Img@0.1.3 by sorosora
  */
 
 import styled, { css } from 'styled-components';
+import PropTypes from 'prop-types';
 
 const typeList = {
   cover: css`
@@ -28,5 +29,15 @@ const typeList = {
 const Img = styled.img`
   ${({ type }) => typeList[type] || ''};
 `;
+
+Img.propTypes = {
+  type: PropTypes.string,
+  src: PropTypes.string.isRequired,
+  alt: PropTypes.string,
+};
+
+Img.defaultProps = {
+  alt: '',
+};
 
 export default Img;
