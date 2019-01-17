@@ -1,4 +1,4 @@
 .idea
-src
+# src
 .babelrc
 rollup.config.js
