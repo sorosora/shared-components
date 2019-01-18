@@ -1158,32 +1158,15 @@ ConditionalWrap.propTypes = {
   children: propTypes.node.isRequired
 };
 
-var IconWrapper = styled.span.withConfig({
-  displayName: "IconWrapper",
-  componentId: "sc-1sp40zq-0"
-})(["display:inline-flex;align-items:center;:before{content:'\u200B';}"]);
-var Icon = styled(function (_ref) {
-  var className = _ref.className,
-      src = _ref.src,
-      alt = _ref.alt,
-      otherProps = _objectWithoutProperties(_ref, ["className", "src", "alt"]);
-
-  return React.createElement(IconWrapper, {
-    className: className
-  }, React.createElement("img", _extends({
-    alt: alt,
-    src: src
-  }, otherProps)));
-}).withConfig({
-  displayName: "Icon",
-  componentId: "sc-1sp40zq-1"
-})([""]);
-Icon.propTypes = {
-  src: propTypes.string.isRequired,
-  alt: propTypes.string
-};
-Icon.defaultProps = {
-  alt: ''
+/**
+ * styled-components InlineCenter@0.1.0 by sorosora
+ */
+var InlineCenter = styled.span.withConfig({
+  displayName: "InlineCenter",
+  componentId: "ws8jre-0"
+})(["display:inline-flex;align-items:center;max-height:1em;:before{content:'\u200B';}"]);
+InlineCenter.propTypes = {
+  children: propTypes.node.isRequired
 };
 
 var typeList = {
@@ -1344,4 +1327,4 @@ var withPrefetch = function withPrefetch(ComposedComponent) {
   })([""]);
 };
 
-export { Collapse, ConditionalWrap, Icon, Img, RatioBox, withPrefetch };
+export { Collapse, ConditionalWrap, InlineCenter, Img, RatioBox, withPrefetch };
