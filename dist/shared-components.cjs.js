@@ -1016,7 +1016,7 @@ var maxHeightStyle = function maxHeightStyle(enabled, active, maxHeight) {
 var ExpandableWrapper = styled__default.div.withConfig({
   displayName: "ExpandableWrapper",
   componentId: "bxis13-0"
-})(["overflow:hidden;transition:all .5s;transition-timing-function:", ";max-height:", ";", ";", ";"], function (_ref) {
+})(["overflow:hidden;transition:all .5s;transition-timing-function:", ";max-height:", ";", "{max-height:", ";}", "{max-height:", ";}"], function (_ref) {
   var active = _ref.active;
   return active ? 'cubic-bezier(0.71, 0.01, 1, 0.32)' : 'cubic-bezier(.075,.82,.165,1)';
 }, function (_ref2) {
@@ -1029,26 +1029,26 @@ var ExpandableWrapper = styled__default.div.withConfig({
   return maxHeightStyle(enabled, active, maxHeight);
 }, function (_ref3) {
   var theme = _ref3.theme;
-  return theme.media.tablet(styled.css(["max-height:", ";"], function (_ref4) {
-    var _ref4$enabled = _slicedToArray(_ref4.enabled, 2),
-        enabled = _ref4$enabled[1],
-        active = _ref4.active,
-        _ref4$maxHeight = _slicedToArray(_ref4.maxHeight, 2),
-        maxHeight = _ref4$maxHeight[1];
+  return theme.media.tablet;
+}, function (_ref4) {
+  var _ref4$enabled = _slicedToArray(_ref4.enabled, 2),
+      enabled = _ref4$enabled[1],
+      active = _ref4.active,
+      _ref4$maxHeight = _slicedToArray(_ref4.maxHeight, 2),
+      maxHeight = _ref4$maxHeight[1];
 
-    return maxHeightStyle(enabled, active, maxHeight);
-  }));
+  return maxHeightStyle(enabled, active, maxHeight);
 }, function (_ref5) {
   var theme = _ref5.theme;
-  return theme.media.phone(styled.css(["max-height:", ";"], function (_ref6) {
-    var _ref6$enabled = _slicedToArray(_ref6.enabled, 3),
-        enabled = _ref6$enabled[2],
-        active = _ref6.active,
-        _ref6$maxHeight = _slicedToArray(_ref6.maxHeight, 3),
-        maxHeight = _ref6$maxHeight[2];
+  return theme.media.phone;
+}, function (_ref6) {
+  var _ref6$enabled = _slicedToArray(_ref6.enabled, 3),
+      enabled = _ref6$enabled[2],
+      active = _ref6.active,
+      _ref6$maxHeight = _slicedToArray(_ref6.maxHeight, 3),
+      maxHeight = _ref6$maxHeight[2];
 
-    return maxHeightStyle(enabled, active, maxHeight);
-  }));
+  return maxHeightStyle(enabled, active, maxHeight);
 });
 var ClickableWrapper = styled__default.div.withConfig({
   displayName: "ClickableWrapper",
@@ -1193,9 +1193,6 @@ Icon.defaultProps = {
   alt: ''
 };
 
-/**
- * styled-components Img@0.1.2 by sorosora
- */
 var typeList = {
   cover: styled.css(["width:100%;height:100%;object-fit:cover;font-family:", ";"], function (_ref) {
     var ie = _ref.ie;
@@ -1208,13 +1205,70 @@ var typeList = {
   width: styled.css(["width:100%;"]),
   height: styled.css(["height:100%;"])
 };
-var Img = styled__default.img.withConfig({
-  displayName: "Img",
+var NormalImg = styled__default.img.withConfig({
+  displayName: "NormalImg",
   componentId: "alppnm-0"
 })(["", ";"], function (_ref3) {
   var type = _ref3.type;
   return typeList[type] || '';
 });
+NormalImg.propTypes = {
+  type: propTypes.string,
+  src: propTypes.string.isRequired,
+  alt: propTypes.string
+};
+NormalImg.defaultProps = {
+  alt: ''
+};
+
+var getMedia = function getMedia(media, breakpoint) {
+  var mediaString = media[breakpoint];
+  return mediaString.replace('@media', '').trim();
+};
+
+var Source = styled__default.source.attrs(function (_ref4) {
+  var theme = _ref4.theme,
+      breakpoint = _ref4.breakpoint;
+  return {
+    media: getMedia(theme.media, breakpoint)
+  };
+}).withConfig({
+  displayName: "Source",
+  componentId: "alppnm-1"
+})([""]);
+var Img = styled__default(function (props) {
+  var picture = props.picture,
+      otherProps = _objectWithoutProperties(props, ["picture"]);
+
+  return React.createElement(ConditionalWrap, {
+    condition: !!picture,
+    wrap: function wrap(children) {
+      return React.createElement("picture", null, picture.phone ? React.createElement(Source, {
+        srcSet: picture.phone,
+        breakpoint: "phone"
+      }) : null, picture.tablet ? React.createElement(Source, {
+        srcSet: picture.tablet,
+        breakpoint: "tablet"
+      }) : null, children);
+    }
+  }, React.createElement(NormalImg, otherProps));
+}).withConfig({
+  displayName: "Img",
+  componentId: "alppnm-2"
+})([""]);
+var picturePropTypes = propTypes.shape({
+  phone: propTypes.string,
+  tablet: propTypes.string
+});
+Img.propTypes = {
+  type: propTypes.string,
+  src: propTypes.string.isRequired,
+  alt: propTypes.string,
+  picture: picturePropTypes
+};
+Img.defaultProps = {
+  alt: ''
+};
 
 var checkBreak = function checkBreak(value, expectedValue) {
   return value === 'break' ? expectedValue : value;
@@ -1227,33 +1281,33 @@ var RatioContainer = styled__default.div.withConfig({
 var RatioWrapper = styled__default.div.withConfig({
   displayName: "RatioWrapper",
   componentId: "pjwv5a-1"
-})(["position:relative;padding-bottom:", ";height:0;", "{position:absolute;top:0;left:0;right:0;bottom:0;}", ";", ";"], function (_ref) {
+})(["position:relative;padding-bottom:", ";height:0;", "{position:absolute;top:0;left:0;right:0;bottom:0;}", "{padding-bottom:", ";height:", ";;", "{position:", ";;}}", "{padding-bottom:", ";height:", ";;", "{position:", ";;}}"], function (_ref) {
   var height = _ref.height;
   return height && height[0] ? height[0] : '';
 }, RatioContainer, function (_ref2) {
   var theme = _ref2.theme;
-  return theme.media.tablet(styled.css(["padding-bottom:", ";height:", ";;", "{position:", ";;}"], function (_ref3) {
-    var height = _ref3.height;
-    return height && height[1] ? checkBreak(height[1], 0) : '';
-  }, function (_ref4) {
-    var height = _ref4.height;
-    return height && height[1] === 'break' ? 'auto' : '';
-  }, RatioContainer, function (_ref5) {
-    var height = _ref5.height;
-    return height && height[1] === 'break' ? 'relative' : '';
-  }));
+  return theme.media.tablet;
+}, function (_ref3) {
+  var height = _ref3.height;
+  return height && height[1] ? checkBreak(height[1], 0) : '';
+}, function (_ref4) {
+  var height = _ref4.height;
+  return height && height[1] === 'break' ? 'auto' : '';
+}, RatioContainer, function (_ref5) {
+  var height = _ref5.height;
+  return height && height[1] === 'break' ? 'relative' : '';
 }, function (_ref6) {
   var theme = _ref6.theme;
-  return theme.media.phone(styled.css(["padding-bottom:", ";height:", ";;", "{position:", ";;}"], function (_ref7) {
-    var height = _ref7.height;
-    return height && height[2] ? checkBreak(height[2], 0) : '';
-  }, function (_ref8) {
-    var height = _ref8.height;
-    return height && height[2] === 'break' ? 'auto' : '';
-  }, RatioContainer, function (_ref9) {
-    var height = _ref9.height;
-    return height && height[2] === 'break' ? 'relative' : 'absolute';
-  }));
+  return theme.media.phone;
+}, function (_ref7) {
+  var height = _ref7.height;
+  return height && height[2] ? checkBreak(height[2], 0) : '';
+}, function (_ref8) {
+  var height = _ref8.height;
+  return height && height[2] === 'break' ? 'auto' : '';
+}, RatioContainer, function (_ref9) {
+  var height = _ref9.height;
+  return height && height[2] === 'break' ? 'relative' : 'absolute';
 });
 
 var RatioBox = function RatioBox(props) {
