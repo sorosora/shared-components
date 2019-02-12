@@ -4,7 +4,6 @@
 
 import React from 'react';
 import styled from 'styled-components';
-import PropTypes from 'prop-types';
 
 /**
  * @param ComposedComponent
@@ -24,10 +23,6 @@ const withPrefetch = (ComposedComponent, urls = []) => {
         }
       </ComposedComponent>
     );
-  };
-
-  WithPrefetch.propTypes = {
-    children: PropTypes.node.isRequired,
   };
 
   return styled(WithPrefetch)``;
