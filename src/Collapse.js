@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
 const defaultMaxHeight = '9999px';
@@ -24,7 +24,7 @@ const maxHeightStyle = (enabled, active, maxHeight) => {
   return maxHeight;
 };
 
-const ExpandableWrapper = styled.div`
+const Expander = styled.div`
   overflow: hidden;
   transition: all .5s;
   transition-timing-function: ${({ active }) =>
@@ -44,7 +44,7 @@ const ExpandableWrapper = styled.div`
   }
 `;
 
-const ClickableWrapper = styled.div`
+const Clicker = styled.div`
   cursor: pointer;
 `;
 
@@ -72,15 +72,22 @@ class Collapse extends React.Component {
     if (activeCallback) {
       activeCallback(this.state.active);
     }
-    const [clickableContent, expandableContent] = children;
     return (
       <CollapseWrapper {...otherProps}>
-        <ClickableWrapper onClick={this.handleClick} active={this.state.active}>
-          <clickableContent.type {...clickableContent.props} active={this.state.active} />
-        </ClickableWrapper>
-        <ExpandableWrapper active={this.state.active} enabled={enabled} maxHeight={maxHeight}>
-          <expandableContent.type {...expandableContent.props} active={this.state.active} />
-        </ExpandableWrapper>
+        {
+          children.map((child, key) => {
+            if (child.type.styledComponentId === Clicker.styledComponentId) {
+              return (
+                <child.type {...child.props} onClick={this.handleClick} key={`${key}-clicker`} />
+              )
+            }
+            if (child.type.styledComponentId === Expander.styledComponentId) {
+              return (
+                <child.type {...child.props} active={this.state.active} enabled={enabled} maxHeight={maxHeight} key={`${key}-expander`} />
+              )
+            }
+          })
+        }
       </CollapseWrapper>
     );
   }
@@ -88,7 +95,7 @@ class Collapse extends React.Component {
 
 Collapse.propTypes = {
   activeCallback: PropTypes.func,
-  children: PropTypes.arrayOf(PropTypes.element).isRequired,
+  children: PropTypes.node.isRequired,
   enabled: PropTypes.arrayOf(PropTypes.bool),
   initActive: PropTypes.bool,
   maxHeight: PropTypes.arrayOf(PropTypes.string),
@@ -100,5 +107,8 @@ Collapse.defaultProps = {
   initActive: false,
   maxHeight: [],
 };
+
+Collapse.Clicker = Clicker;
+Collapse.Expander = Expander;
 
 export default Collapse;

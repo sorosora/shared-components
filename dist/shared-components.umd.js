@@ -1012,8 +1012,8 @@
     return maxHeight;
   };
 
-  var ExpandableWrapper = styled__default.div.withConfig({
-    displayName: "ExpandableWrapper",
+  var Expander = styled__default.div.withConfig({
+    displayName: "Expander",
     componentId: "bxis13-0"
   })(["overflow:hidden;transition:all .5s;transition-timing-function:", ";max-height:", ";", "{max-height:", ";}", "{max-height:", ";}"], function (_ref) {
     var active = _ref.active;
@@ -1049,8 +1049,8 @@
 
     return maxHeightStyle(enabled, active, maxHeight);
   });
-  var ClickableWrapper = styled__default.div.withConfig({
-    displayName: "ClickableWrapper",
+  var Clicker = styled__default.div.withConfig({
+    displayName: "Clicker",
     componentId: "bxis13-1"
   })(["cursor:pointer;"]);
   var CollapseWrapper = styled__default.div.withConfig({
@@ -1088,6 +1088,8 @@
     _createClass(Collapse, [{
       key: "render",
       value: function render() {
+        var _this2 = this;
+
         var _this$props = this.props,
             activeCallback = _this$props.activeCallback,
             children = _this$props.children,
@@ -1099,22 +1101,23 @@
           activeCallback(this.state.active);
         }
 
-        var _children = _slicedToArray(children, 2),
-            clickableContent = _children[0],
-            expandableContent = _children[1];
+        return React.createElement(CollapseWrapper, otherProps, children.map(function (child, key) {
+          if (child.type.styledComponentId === Clicker.styledComponentId) {
+            return React.createElement(child.type, _extends({}, child.props, {
+              onClick: _this2.handleClick,
+              key: "".concat(key, "-clicker")
+            }));
+          }
 
-        return React.createElement(CollapseWrapper, otherProps, React.createElement(ClickableWrapper, {
-          onClick: this.handleClick,
-          active: this.state.active
-        }, React.createElement(clickableContent.type, _extends({}, clickableContent.props, {
-          active: this.state.active
-        }))), React.createElement(ExpandableWrapper, {
-          active: this.state.active,
-          enabled: enabled,
-          maxHeight: maxHeight
-        }, React.createElement(expandableContent.type, _extends({}, expandableContent.props, {
-          active: this.state.active
-        }))));
+          if (child.type.styledComponentId === Expander.styledComponentId) {
+            return React.createElement(child.type, _extends({}, child.props, {
+              active: _this2.state.active,
+              enabled: enabled,
+              maxHeight: maxHeight,
+              key: "".concat(key, "-expander")
+            }));
+          }
+        }));
       }
     }]);
 
@@ -1123,7 +1126,7 @@
 
   Collapse.propTypes = {
     activeCallback: propTypes.func,
-    children: propTypes.arrayOf(propTypes.element).isRequired,
+    children: propTypes.node.isRequired,
     enabled: propTypes.arrayOf(propTypes.bool),
     initActive: propTypes.bool,
     maxHeight: propTypes.arrayOf(propTypes.string)
@@ -1134,6 +1137,8 @@
     initActive: false,
     maxHeight: []
   };
+  Collapse.Clicker = Clicker;
+  Collapse.Expander = Expander;
 
   /**
    * styled-components ConditionalWrap@0.1.1 by sorosora
@@ -1325,9 +1330,6 @@
       }));
     };
 
-    WithPrefetch.propTypes = {
-      children: propTypes.node.isRequired
-    };
     return styled__default(WithPrefetch).withConfig({
       componentId: "ibx1ml-0"
     })([""]);
