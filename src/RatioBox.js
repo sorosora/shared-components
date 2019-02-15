@@ -1,22 +1,28 @@
 /**
- * styled-components RatioBox@0.2.0 by sorosora
+ * styled-components RatioBox@0.3.0 by sorosora
  */
 
 import React from 'react';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
-const checkBreak = (value, expectedValue) => (value === 'break' ? expectedValue : value);
+const checkBreak = (value, trueValue, falseValue) => (value === 'break' ? trueValue : falseValue);
+
+const calcRatio = (ratioString) => {
+  const [width, height] = ratioString.split(':');
+  return `${(height / width) * 100}%`;
+};
+
+const setProp = (prop, size, func) => func(prop[size] || prop[0]);
 
 const RatioContainer = styled.div``;
 
 const RatioWrapper = styled.div`
   position: relative;
-  padding-bottom: ${({ height }) => (height && height[0] ? height[0] : '')};
-  height: 0;
+  padding-bottom: ${(props) => setProp(props.ratio, 0, (ratio) => checkBreak(ratio, 0, calcRatio(ratio)))};
   
   ${RatioContainer} {
-    position: absolute;
+    position: ${(props) => setProp(props.ratio, 0, (ratio) => checkBreak(ratio, 'relative', 'absolute'))};
     top: 0;
     left: 0;
     right: 0;
@@ -24,20 +30,18 @@ const RatioWrapper = styled.div`
   }
   
   ${({ theme }) => theme.media.tablet} {
-    padding-bottom: ${({ height }) => (height && height[1] ? checkBreak(height[1], 0) : '')};
-    height: ${({ height }) => (height && height[1] === 'break' ? 'auto' : '')};;
+    padding-bottom: ${(props) => setProp(props.ratio, 1, (ratio) => checkBreak(ratio, 0, calcRatio(ratio)))};
     
     ${RatioContainer} {
-      position: ${({ height }) => (height && height[1] === 'break' ? 'relative' : '')};;
+      position: ${(props) => setProp(props.ratio, 1, (ratio) => checkBreak(ratio, 'relative', 'absolute'))};
     }
   }
   
   ${({ theme }) => theme.media.phone} {
-    padding-bottom: ${({ height }) => (height && height[2] ? checkBreak(height[2], 0) : '')};
-    height: ${({ height }) => (height && height[2] === 'break' ? 'auto' : '')};;
+    padding-bottom: ${(props) => setProp(props.ratio, 2, (ratio) => checkBreak(ratio, 0, calcRatio(ratio)))};
     
     ${RatioContainer} {
-      position: ${({ height }) => (height && height[2] === 'break' ? 'relative' : 'absolute')};;
+      position: ${(props) => setProp(props.ratio, 2, (ratio) => checkBreak(ratio, 'relative', 'absolute'))};
     }
   }
 `;
@@ -55,6 +59,7 @@ const RatioBox = (props) => {
 
 RatioBox.propTypes = {
   children: PropTypes.node.isRequired,
+  ratio: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 export default RatioBox;

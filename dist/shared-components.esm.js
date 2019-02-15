@@ -1306,8 +1306,21 @@ Img.defaultProps = {
   alt: ''
 };
 
-var checkBreak = function checkBreak(value, expectedValue) {
-  return value === 'break' ? expectedValue : value;
+var checkBreak = function checkBreak(value, trueValue, falseValue) {
+  return value === 'break' ? trueValue : falseValue;
+};
+
+var calcRatio = function calcRatio(ratioString) {
+  var _ratioString$split = ratioString.split(':'),
+      _ratioString$split2 = _slicedToArray(_ratioString$split, 2),
+      width = _ratioString$split2[0],
+      height = _ratioString$split2[1];
+
+  return "".concat(height / width * 100, "%");
+};
+
+var setProp = function setProp(prop, size, func) {
+  return func(prop[size] || prop[0]);
 };
 
 var RatioContainer = styled.div.withConfig({
@@ -1317,33 +1330,36 @@ var RatioContainer = styled.div.withConfig({
 var RatioWrapper = styled.div.withConfig({
   displayName: "RatioWrapper",
   componentId: "pjwv5a-1"
-})(["position:relative;padding-bottom:", ";height:0;", "{position:absolute;top:0;left:0;right:0;bottom:0;}", "{padding-bottom:", ";height:", ";;", "{position:", ";;}}", "{padding-bottom:", ";height:", ";;", "{position:", ";;}}"], function (_ref) {
-  var height = _ref.height;
-  return height && height[0] ? height[0] : '';
-}, RatioContainer, function (_ref2) {
-  var theme = _ref2.theme;
+})(["position:relative;padding-bottom:", ";", "{position:", ";top:0;left:0;right:0;bottom:0;}", "{padding-bottom:", ";", "{position:", ";}}", "{padding-bottom:", ";", "{position:", ";}}"], function (props) {
+  return setProp(props.ratio, 0, function (ratio) {
+    return checkBreak(ratio, 0, calcRatio(ratio));
+  });
+}, RatioContainer, function (props) {
+  return setProp(props.ratio, 0, function (ratio) {
+    return checkBreak(ratio, 'relative', 'absolute');
+  });
+}, function (_ref) {
+  var theme = _ref.theme;
   return theme.media.tablet;
-}, function (_ref3) {
-  var height = _ref3.height;
-  return height && height[1] ? checkBreak(height[1], 0) : '';
-}, function (_ref4) {
-  var height = _ref4.height;
-  return height && height[1] === 'break' ? 'auto' : '';
-}, RatioContainer, function (_ref5) {
-  var height = _ref5.height;
-  return height && height[1] === 'break' ? 'relative' : '';
-}, function (_ref6) {
-  var theme = _ref6.theme;
+}, function (props) {
+  return setProp(props.ratio, 1, function (ratio) {
+    return checkBreak(ratio, 0, calcRatio(ratio));
+  });
+}, RatioContainer, function (props) {
+  return setProp(props.ratio, 1, function (ratio) {
+    return checkBreak(ratio, 'relative', 'absolute');
+  });
+}, function (_ref2) {
+  var theme = _ref2.theme;
   return theme.media.phone;
-}, function (_ref7) {
-  var height = _ref7.height;
-  return height && height[2] ? checkBreak(height[2], 0) : '';
-}, function (_ref8) {
-  var height = _ref8.height;
-  return height && height[2] === 'break' ? 'auto' : '';
-}, RatioContainer, function (_ref9) {
-  var height = _ref9.height;
-  return height && height[2] === 'break' ? 'relative' : 'absolute';
+}, function (props) {
+  return setProp(props.ratio, 2, function (ratio) {
+    return checkBreak(ratio, 0, calcRatio(ratio));
+  });
+}, RatioContainer, function (props) {
+  return setProp(props.ratio, 2, function (ratio) {
+    return checkBreak(ratio, 'relative', 'absolute');
+  });
 });
 
 var RatioBox = function RatioBox(props) {
@@ -1354,7 +1370,8 @@ var RatioBox = function RatioBox(props) {
 };
 
 RatioBox.propTypes = {
-  children: propTypes.node.isRequired
+  children: propTypes.node.isRequired,
+  ratio: propTypes.arrayOf(propTypes.string).isRequired
 };
 
 /**
