@@ -1,47 +1,38 @@
 /**
- * styled-components Collapse@0.2.0 by sorosora
+ * styled-components Collapse@0.3.0 by sorosora
  */
 
 import React from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
-const defaultMaxHeight = '9999px';
+const defaultTransition = 'all 0.5s';
 
-const maxHeightStyle = (enabled, active, maxHeight) => {
-  if (typeof enabled === 'undefined') {
-    return '';
-  }
-  if (!enabled) {
-    return '100%';
-  }
-  if (!active) {
-    return 0;
-  }
-  if (!maxHeight) {
-    return defaultMaxHeight;
-  }
-  return maxHeight;
+const getTransitionTime = (transition) => {
+  const values = transition.split(' ');
+  let transitionTime = 0;
+  values.forEach(value => {
+    if (value.slice(-1) === 's') {
+      transitionTime += parseFloat(value);
+    }
+  });
+  return transitionTime * 1000; // ms
 };
 
 const Expander = styled.div`
-  overflow: hidden;
-  transition: all .5s;
-  transition-timing-function: ${({ active }) =>
-    (active ? 'cubic-bezier(0.71, 0.01, 1, 0.32)' : 'cubic-bezier(.075,.82,.165,1)')};
-  
-  max-height: ${({ enabled: [enabled], active, maxHeight: [maxHeight] }) =>
-    maxHeightStyle(enabled, active, maxHeight)};
+  max-height: ${({ enabled: [enabled], maxHeight }) => (enabled ? `${maxHeight}px` : '100%')};
+  overflow: ${({ enabled: [enabled], overflow }) => (enabled ? overflow : 'visible')};
+  transition: ${({ transition }) => transition};
   
   ${({ theme }) => theme.media.tablet} {
-    max-height: ${({ enabled: [, enabled], active, maxHeight: [, maxHeight] }) =>
-    maxHeightStyle(enabled, active, maxHeight)};
-  }
-    
+    max-height: ${({ enabled: [, enabled], maxHeight }) => (enabled ? `${maxHeight}px` : '100%')};
+    overflow: ${({ enabled: [, enabled], overflow }) => (enabled ? overflow : 'visible')};
+  };
+  
   ${({ theme }) => theme.media.phone} {
-    max-height: ${({ enabled: [, , enabled], active, maxHeight: [, , maxHeight] }) =>
-    maxHeightStyle(enabled, active, maxHeight)};
-  }
+    max-height: ${({ enabled: [, , enabled], maxHeight }) => (enabled ? `${maxHeight}px` : '100%')};
+    overflow: ${({ enabled: [, , enabled], overflow }) => (enabled ? overflow : 'visible')};
+  };
 `;
 
 const Clicker = styled.div`
@@ -53,24 +44,68 @@ const CollapseWrapper = styled.div``;
 class Collapse extends React.Component {
   constructor(props) {
     super(props);
-    const { initActive } = props;
+    const { initActive, children } = props;
+    const maxHeight = {};
+    this.expanderRefs = {};
+    this.active = initActive;
+    children.forEach((child, key) => {
+      if (child.type.styledComponentId === Expander.styledComponentId) {
+        this.expanderRefs[`${key}-expander`] = React.createRef();
+        maxHeight[`${key}-expander`] = initActive ? 99999 : 0;
+      }
+    });
     this.state = {
-      active: initActive,
+      maxHeight,
+      overflow: initActive ? 'visible' : 'hidden',
     };
   }
-  handleClick = () => {
-    this.setState(prevState => ({ active: !prevState.active }));
+
+  componentDidMount() {
+    this.setExpander();
+  }
+
+  setMaxHeight = (maxHeight) => {
+    this.setState(() => {
+      if (this.active) return { maxHeight };
+      return { maxHeight, overflow: 'hidden' };
+    }, () => {
+      if (this.active) {
+        setTimeout(() => {
+          this.setState({
+            overflow: 'visible',
+          });
+        }, getTransitionTime(this.props.transition))
+      }
+    });
   };
+
+  setExpander = () => {
+    const { children } = this.props;
+    const maxHeight = {};
+    children.forEach((child, key) => {
+      if (child.type.styledComponentId === Expander.styledComponentId) {
+        const expander = this.expanderRefs[`${key}-expander`].current;
+        maxHeight[`${key}-expander`] = this.active ? expander.scrollHeight : 0;
+      }
+    });
+    this.setMaxHeight(maxHeight);
+  };
+
+  handleClick = () => {
+    this.active = !this.active;
+    this.setExpander();
+  };
+
   render() {
     const {
       activeCallback,
       children,
       enabled,
-      maxHeight,
+      transition,
       ...otherProps
     } = this.props;
     if (activeCallback) {
-      activeCallback(this.state.active);
+      activeCallback(this.active);
     }
     return (
       <CollapseWrapper {...otherProps}>
@@ -83,7 +118,15 @@ class Collapse extends React.Component {
             }
             if (child.type.styledComponentId === Expander.styledComponentId) {
               return (
-                <child.type {...child.props} active={this.state.active} enabled={enabled} maxHeight={maxHeight} key={`${key}-expander`} />
+                <child.type
+                  {...child.props}
+                  enabled={enabled}
+                  maxHeight={this.state.maxHeight[`${key}-expander`]}
+                  overflow={this.state.overflow}
+                  transition={transition}
+                  key={`${key}-expander`}
+                  ref={this.expanderRefs[`${key}-expander`]}
+                />
               )
             }
           })
@@ -98,14 +141,14 @@ Collapse.propTypes = {
   children: PropTypes.node.isRequired,
   enabled: PropTypes.arrayOf(PropTypes.bool),
   initActive: PropTypes.bool,
-  maxHeight: PropTypes.arrayOf(PropTypes.string),
+  transition: PropTypes.string,
 };
 
 Collapse.defaultProps = {
   activeCallback: undefined,
-  enabled: [true],
+  enabled: [true , true, true],
   initActive: false,
-  maxHeight: [],
+  transition: defaultTransition,
 };
 
 Collapse.Clicker = Clicker;

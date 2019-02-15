@@ -991,64 +991,67 @@ if (process.env.NODE_ENV !== 'production') {
 }
 });
 
-var defaultMaxHeight = '9999px';
+var defaultTransition = 'all 0.5s';
 
-var maxHeightStyle = function maxHeightStyle(enabled, active, maxHeight) {
-  if (typeof enabled === 'undefined') {
-    return '';
-  }
-
-  if (!enabled) {
-    return '100%';
-  }
-
-  if (!active) {
-    return 0;
-  }
-
-  if (!maxHeight) {
-    return defaultMaxHeight;
-  }
-
-  return maxHeight;
+var getTransitionTime = function getTransitionTime(transition) {
+  var values = transition.split(' ');
+  var transitionTime = 0;
+  values.forEach(function (value) {
+    if (value.slice(-1) === 's') {
+      transitionTime += parseFloat(value);
+    }
+  });
+  return transitionTime * 1000; // ms
 };
 
 var Expander = styled__default.div.withConfig({
   displayName: "Expander",
   componentId: "bxis13-0"
-})(["overflow:hidden;transition:all .5s;transition-timing-function:", ";max-height:", ";", "{max-height:", ";}", "{max-height:", ";}"], function (_ref) {
-  var active = _ref.active;
-  return active ? 'cubic-bezier(0.71, 0.01, 1, 0.32)' : 'cubic-bezier(.075,.82,.165,1)';
+})(["max-height:", ";overflow:", ";transition:", ";", "{max-height:", ";overflow:", ";};", "{max-height:", ";overflow:", ";};"], function (_ref) {
+  var _ref$enabled = _slicedToArray(_ref.enabled, 1),
+      enabled = _ref$enabled[0],
+      maxHeight = _ref.maxHeight;
+
+  return enabled ? "".concat(maxHeight, "px") : '100%';
 }, function (_ref2) {
   var _ref2$enabled = _slicedToArray(_ref2.enabled, 1),
       enabled = _ref2$enabled[0],
-      active = _ref2.active,
-      _ref2$maxHeight = _slicedToArray(_ref2.maxHeight, 1),
-      maxHeight = _ref2$maxHeight[0];
+      overflow = _ref2.overflow;
 
-  return maxHeightStyle(enabled, active, maxHeight);
+  return enabled ? overflow : 'visible';
 }, function (_ref3) {
-  var theme = _ref3.theme;
-  return theme.media.tablet;
+  var transition = _ref3.transition;
+  return transition;
 }, function (_ref4) {
-  var _ref4$enabled = _slicedToArray(_ref4.enabled, 2),
-      enabled = _ref4$enabled[1],
-      active = _ref4.active,
-      _ref4$maxHeight = _slicedToArray(_ref4.maxHeight, 2),
-      maxHeight = _ref4$maxHeight[1];
-
-  return maxHeightStyle(enabled, active, maxHeight);
+  var theme = _ref4.theme;
+  return theme.media.tablet;
 }, function (_ref5) {
-  var theme = _ref5.theme;
-  return theme.media.phone;
-}, function (_ref6) {
-  var _ref6$enabled = _slicedToArray(_ref6.enabled, 3),
-      enabled = _ref6$enabled[2],
-      active = _ref6.active,
-      _ref6$maxHeight = _slicedToArray(_ref6.maxHeight, 3),
-      maxHeight = _ref6$maxHeight[2];
+  var _ref5$enabled = _slicedToArray(_ref5.enabled, 2),
+      enabled = _ref5$enabled[1],
+      maxHeight = _ref5.maxHeight;
 
-  return maxHeightStyle(enabled, active, maxHeight);
+  return enabled ? "".concat(maxHeight, "px") : '100%';
+}, function (_ref6) {
+  var _ref6$enabled = _slicedToArray(_ref6.enabled, 2),
+      enabled = _ref6$enabled[1],
+      overflow = _ref6.overflow;
+
+  return enabled ? overflow : 'visible';
+}, function (_ref7) {
+  var theme = _ref7.theme;
+  return theme.media.phone;
+}, function (_ref8) {
+  var _ref8$enabled = _slicedToArray(_ref8.enabled, 3),
+      enabled = _ref8$enabled[2],
+      maxHeight = _ref8.maxHeight;
+
+  return enabled ? "".concat(maxHeight, "px") : '100%';
+}, function (_ref9) {
+  var _ref9$enabled = _slicedToArray(_ref9.enabled, 3),
+      enabled = _ref9$enabled[2],
+      overflow = _ref9.overflow;
+
+  return enabled ? overflow : 'visible';
 });
 var Clicker = styled__default.div.withConfig({
   displayName: "Clicker",
@@ -1071,22 +1074,72 @@ function (_React$Component) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Collapse).call(this, props));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleClick", function () {
-      _this.setState(function (prevState) {
-        return {
-          active: !prevState.active
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "setMaxHeight", function (maxHeight) {
+      _this.setState(function () {
+        if (_this.active) return {
+          maxHeight: maxHeight
         };
+        return {
+          maxHeight: maxHeight,
+          overflow: 'hidden'
+        };
+      }, function () {
+        if (_this.active) {
+          setTimeout(function () {
+            _this.setState({
+              overflow: 'visible'
+            });
+          }, getTransitionTime(_this.props.transition));
+        }
       });
     });
 
-    var initActive = props.initActive;
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "setExpander", function () {
+      var children = _this.props.children;
+      var maxHeight = {};
+      children.forEach(function (child, key) {
+        if (child.type.styledComponentId === Expander.styledComponentId) {
+          var expander = _this.expanderRefs["".concat(key, "-expander")].current;
+
+          maxHeight["".concat(key, "-expander")] = _this.active ? expander.scrollHeight : 0;
+        }
+      });
+
+      _this.setMaxHeight(maxHeight);
+    });
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleClick", function () {
+      _this.active = !_this.active;
+
+      _this.setExpander();
+    });
+
+    var initActive = props.initActive,
+        _children = props.children;
+    var _maxHeight = {};
+    _this.expanderRefs = {};
+    _this.active = initActive;
+
+    _children.forEach(function (child, key) {
+      if (child.type.styledComponentId === Expander.styledComponentId) {
+        _this.expanderRefs["".concat(key, "-expander")] = React.createRef();
+        _maxHeight["".concat(key, "-expander")] = initActive ? 99999 : 0;
+      }
+    });
+
     _this.state = {
-      active: initActive
+      maxHeight: _maxHeight,
+      overflow: initActive ? 'visible' : 'hidden'
     };
     return _this;
   }
 
   _createClass(Collapse, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      this.setExpander();
+    }
+  }, {
     key: "render",
     value: function render() {
       var _this2 = this;
@@ -1095,11 +1148,11 @@ function (_React$Component) {
           activeCallback = _this$props.activeCallback,
           children = _this$props.children,
           enabled = _this$props.enabled,
-          maxHeight = _this$props.maxHeight,
-          otherProps = _objectWithoutProperties(_this$props, ["activeCallback", "children", "enabled", "maxHeight"]);
+          transition = _this$props.transition,
+          otherProps = _objectWithoutProperties(_this$props, ["activeCallback", "children", "enabled", "transition"]);
 
       if (activeCallback) {
-        activeCallback(this.state.active);
+        activeCallback(this.active);
       }
 
       return React.createElement(CollapseWrapper, otherProps, children.map(function (child, key) {
@@ -1112,10 +1165,12 @@ function (_React$Component) {
 
         if (child.type.styledComponentId === Expander.styledComponentId) {
           return React.createElement(child.type, _extends({}, child.props, {
-            active: _this2.state.active,
             enabled: enabled,
-            maxHeight: maxHeight,
-            key: "".concat(key, "-expander")
+            maxHeight: _this2.state.maxHeight["".concat(key, "-expander")],
+            overflow: _this2.state.overflow,
+            transition: transition,
+            key: "".concat(key, "-expander"),
+            ref: _this2.expanderRefs["".concat(key, "-expander")]
           }));
         }
       }));
@@ -1130,13 +1185,13 @@ Collapse.propTypes = {
   children: propTypes.node.isRequired,
   enabled: propTypes.arrayOf(propTypes.bool),
   initActive: propTypes.bool,
-  maxHeight: propTypes.arrayOf(propTypes.string)
+  transition: propTypes.string
 };
 Collapse.defaultProps = {
   activeCallback: undefined,
-  enabled: [true],
+  enabled: [true, true, true],
   initActive: false,
-  maxHeight: []
+  transition: defaultTransition
 };
 Collapse.Clicker = Clicker;
 Collapse.Expander = Expander;
