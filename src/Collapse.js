@@ -1,5 +1,5 @@
 /**
- * styled-components Collapse@0.3.1 by sorosora
+ * styled-components Collapse@0.3.2 by sorosora
  */
 
 import React from 'react';
@@ -21,16 +21,19 @@ const getTransitionTime = (transition) => {
 
 const Expander = styled.div`
   max-height: ${({ enabled: [enabled], maxHeight }) => (enabled ? `${maxHeight}px` : '100%')};
+  min-height: ${({ minHeight: [minHeight] }) => minHeight};
   overflow: ${({ enabled: [enabled], overflow }) => (enabled ? overflow : 'visible')};
   transition: ${({ transition }) => transition};
   
   ${({ theme }) => theme.media.tablet} {
     max-height: ${({ enabled: [, enabled], maxHeight }) => (enabled ? `${maxHeight}px` : '100%')};
+    min-height: ${({ minHeight: [, minHeight] }) => minHeight};
     overflow: ${({ enabled: [, enabled], overflow }) => (enabled ? overflow : 'visible')};
   };
   
   ${({ theme }) => theme.media.phone} {
     max-height: ${({ enabled: [, , enabled], maxHeight }) => (enabled ? `${maxHeight}px` : '100%')};
+    min-height: ${({ minHeight: [, , minHeight] }) => minHeight};
     overflow: ${({ enabled: [, , enabled], overflow }) => (enabled ? overflow : 'visible')};
   };
 `;
@@ -168,6 +171,14 @@ Clicker.propTypes = {
 
 Clicker.defaultProps = {
   render: undefined,
+};
+
+Expander.propTypes = {
+  minHeight: PropTypes.arrayOf(PropTypes.string),
+};
+
+Expander.defaultProps = {
+  minHeight: ['0', '0', '0'],
 };
 
 Collapse.Clicker = Clicker;

@@ -1000,49 +1000,64 @@ var getTransitionTime = function getTransitionTime(transition) {
 var Expander = styled.div.withConfig({
   displayName: "Expander",
   componentId: "bxis13-0"
-})(["max-height:", ";overflow:", ";transition:", ";", "{max-height:", ";overflow:", ";};", "{max-height:", ";overflow:", ";};"], function (_ref) {
+})(["max-height:", ";min-height:", ";overflow:", ";transition:", ";", "{max-height:", ";min-height:", ";overflow:", ";};", "{max-height:", ";min-height:", ";overflow:", ";};"], function (_ref) {
   var _ref$enabled = _slicedToArray(_ref.enabled, 1),
       enabled = _ref$enabled[0],
       maxHeight = _ref.maxHeight;
 
   return enabled ? "".concat(maxHeight, "px") : '100%';
 }, function (_ref2) {
-  var _ref2$enabled = _slicedToArray(_ref2.enabled, 1),
-      enabled = _ref2$enabled[0],
-      overflow = _ref2.overflow;
+  var _ref2$minHeight = _slicedToArray(_ref2.minHeight, 1),
+      minHeight = _ref2$minHeight[0];
+
+  return minHeight;
+}, function (_ref3) {
+  var _ref3$enabled = _slicedToArray(_ref3.enabled, 1),
+      enabled = _ref3$enabled[0],
+      overflow = _ref3.overflow;
 
   return enabled ? overflow : 'visible';
-}, function (_ref3) {
-  var transition = _ref3.transition;
-  return transition;
 }, function (_ref4) {
-  var theme = _ref4.theme;
-  return theme.media.tablet;
+  var transition = _ref4.transition;
+  return transition;
 }, function (_ref5) {
-  var _ref5$enabled = _slicedToArray(_ref5.enabled, 2),
-      enabled = _ref5$enabled[1],
-      maxHeight = _ref5.maxHeight;
-
-  return enabled ? "".concat(maxHeight, "px") : '100%';
+  var theme = _ref5.theme;
+  return theme.media.tablet;
 }, function (_ref6) {
   var _ref6$enabled = _slicedToArray(_ref6.enabled, 2),
       enabled = _ref6$enabled[1],
-      overflow = _ref6.overflow;
-
-  return enabled ? overflow : 'visible';
-}, function (_ref7) {
-  var theme = _ref7.theme;
-  return theme.media.phone;
-}, function (_ref8) {
-  var _ref8$enabled = _slicedToArray(_ref8.enabled, 3),
-      enabled = _ref8$enabled[2],
-      maxHeight = _ref8.maxHeight;
+      maxHeight = _ref6.maxHeight;
 
   return enabled ? "".concat(maxHeight, "px") : '100%';
+}, function (_ref7) {
+  var _ref7$minHeight = _slicedToArray(_ref7.minHeight, 2),
+      minHeight = _ref7$minHeight[1];
+
+  return minHeight;
+}, function (_ref8) {
+  var _ref8$enabled = _slicedToArray(_ref8.enabled, 2),
+      enabled = _ref8$enabled[1],
+      overflow = _ref8.overflow;
+
+  return enabled ? overflow : 'visible';
 }, function (_ref9) {
-  var _ref9$enabled = _slicedToArray(_ref9.enabled, 3),
-      enabled = _ref9$enabled[2],
-      overflow = _ref9.overflow;
+  var theme = _ref9.theme;
+  return theme.media.phone;
+}, function (_ref10) {
+  var _ref10$enabled = _slicedToArray(_ref10.enabled, 3),
+      enabled = _ref10$enabled[2],
+      maxHeight = _ref10.maxHeight;
+
+  return enabled ? "".concat(maxHeight, "px") : '100%';
+}, function (_ref11) {
+  var _ref11$minHeight = _slicedToArray(_ref11.minHeight, 3),
+      minHeight = _ref11$minHeight[2];
+
+  return minHeight;
+}, function (_ref12) {
+  var _ref12$enabled = _slicedToArray(_ref12.enabled, 3),
+      enabled = _ref12$enabled[2],
+      overflow = _ref12.overflow;
 
   return enabled ? overflow : 'visible';
 });
@@ -1212,6 +1227,12 @@ Clicker.propTypes = {
 };
 Clicker.defaultProps = {
   render: undefined
+};
+Expander.propTypes = {
+  minHeight: propTypes.arrayOf(propTypes.string)
+};
+Expander.defaultProps = {
+  minHeight: ['0', '0', '0']
 };
 Collapse.Clicker = Clicker;
 Collapse.Expander = Expander;
