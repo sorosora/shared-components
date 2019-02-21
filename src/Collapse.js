@@ -1,5 +1,5 @@
 /**
- * styled-components Collapse@0.3.0 by sorosora
+ * styled-components Collapse@0.3.1 by sorosora
  */
 
 import React from 'react';
@@ -35,11 +35,11 @@ const Expander = styled.div`
   };
 `;
 
-const Clicker = styled.div`
-  cursor: pointer;
-`;
+const Clicker = styled.button``;
 
-const CollapseWrapper = styled.div``;
+const CollapseWrapper = styled.div`
+  position: relative;
+`;
 
 class Collapse extends React.Component {
   constructor(props) {
@@ -111,15 +111,26 @@ class Collapse extends React.Component {
       <CollapseWrapper {...otherProps}>
         {
           children.map((child, key) => {
-            if (child.type.styledComponentId === Clicker.styledComponentId) {
+            const { type: Element } = child;
+            if (Element.styledComponentId === Clicker.styledComponentId) {
+              let { type: CollapseClicker, props: { render, onClick, ...collapseClickerProps } } = child;
+              if (render) ({ type: CollapseClicker, props: { onClick, ...collapseClickerProps } } = render);
               return (
-                <child.type {...child.props} onClick={this.handleClick} key={`${key}-clicker`} />
+                <CollapseClicker
+                  {...collapseClickerProps}
+                  onClick={(event) => {
+                    this.handleClick();
+                    if (onClick) onClick(event);
+                  }}
+                  key={`${key}-clicker`}
+                />
               )
             }
-            if (child.type.styledComponentId === Expander.styledComponentId) {
+            if (Element.styledComponentId === Expander.styledComponentId) {
+              const { type: CollapseExpander, props: collapseExpanderProps } = child;
               return (
-                <child.type
-                  {...child.props}
+                <CollapseExpander
+                  {...collapseExpanderProps}
                   enabled={enabled}
                   maxHeight={this.state.maxHeight[`${key}-expander`]}
                   overflow={this.state.overflow}
@@ -149,6 +160,14 @@ Collapse.defaultProps = {
   enabled: [true , true, true],
   initActive: false,
   transition: defaultTransition,
+};
+
+Clicker.propTypes = {
+  render: PropTypes.element,
+};
+
+Clicker.defaultProps = {
+  render: undefined,
 };
 
 Collapse.Clicker = Clicker;

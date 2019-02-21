@@ -1046,14 +1046,14 @@ var Expander = styled.div.withConfig({
 
   return enabled ? overflow : 'visible';
 });
-var Clicker = styled.div.withConfig({
+var Clicker = styled.button.withConfig({
   displayName: "Clicker",
   componentId: "bxis13-1"
-})(["cursor:pointer;"]);
+})([""]);
 var CollapseWrapper = styled.div.withConfig({
   displayName: "CollapseWrapper",
   componentId: "bxis13-2"
-})([""]);
+})(["position:relative;"]);
 
 var Collapse =
 /*#__PURE__*/
@@ -1149,15 +1149,36 @@ function (_React$Component) {
       }
 
       return React.createElement(CollapseWrapper, otherProps, children.map(function (child, key) {
-        if (child.type.styledComponentId === Clicker.styledComponentId) {
-          return React.createElement(child.type, _extends({}, child.props, {
-            onClick: _this2.handleClick,
+        var Element = child.type;
+
+        if (Element.styledComponentId === Clicker.styledComponentId) {
+          var CollapseClicker = child.type,
+              _child$props = child.props,
+              render = _child$props.render,
+              _onClick = _child$props.onClick,
+              collapseClickerProps = _objectWithoutProperties(_child$props, ["render", "onClick"]);
+
+          if (render) {
+            CollapseClicker = render.type;
+            var _render$props = render.props;
+            _onClick = _render$props.onClick;
+            collapseClickerProps = _objectWithoutProperties(_render$props, ["onClick"]);
+          }
+
+          return React.createElement(CollapseClicker, _extends({}, collapseClickerProps, {
+            onClick: function onClick(event) {
+              _this2.handleClick();
+
+              if (_onClick) _onClick(event);
+            },
             key: "".concat(key, "-clicker")
           }));
         }
 
-        if (child.type.styledComponentId === Expander.styledComponentId) {
-          return React.createElement(child.type, _extends({}, child.props, {
+        if (Element.styledComponentId === Expander.styledComponentId) {
+          var CollapseExpander = child.type,
+              collapseExpanderProps = child.props;
+          return React.createElement(CollapseExpander, _extends({}, collapseExpanderProps, {
             enabled: enabled,
             maxHeight: _this2.state.maxHeight["".concat(key, "-expander")],
             overflow: _this2.state.overflow,
@@ -1185,6 +1206,12 @@ Collapse.defaultProps = {
   enabled: [true, true, true],
   initActive: false,
   transition: defaultTransition
+};
+Clicker.propTypes = {
+  render: propTypes.element
+};
+Clicker.defaultProps = {
+  render: undefined
 };
 Collapse.Clicker = Clicker;
 Collapse.Expander = Expander;
