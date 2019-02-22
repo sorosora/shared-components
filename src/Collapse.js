@@ -96,20 +96,20 @@ class Collapse extends React.Component {
 
   handleClick = () => {
     this.active = !this.active;
+    const { activeCallback } = this.props;
+    if (activeCallback) {
+      activeCallback(this.active);
+    }
     this.setExpander();
   };
 
   render() {
     const {
-      activeCallback,
       children,
       enabled,
       transition,
       ...otherProps
     } = this.props;
-    if (activeCallback) {
-      activeCallback(this.active);
-    }
     return (
       <CollapseWrapper {...otherProps}>
         {

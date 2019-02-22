@@ -1118,6 +1118,11 @@ function (_React$Component) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleClick", function () {
       _this.active = !_this.active;
+      var activeCallback = _this.props.activeCallback;
+
+      if (activeCallback) {
+        activeCallback(_this.active);
+      }
 
       _this.setExpander();
     });
@@ -1153,15 +1158,10 @@ function (_React$Component) {
       var _this2 = this;
 
       var _this$props = this.props,
-          activeCallback = _this$props.activeCallback,
           children = _this$props.children,
           enabled = _this$props.enabled,
           transition = _this$props.transition,
-          otherProps = _objectWithoutProperties(_this$props, ["activeCallback", "children", "enabled", "transition"]);
-
-      if (activeCallback) {
-        activeCallback(this.active);
-      }
+          otherProps = _objectWithoutProperties(_this$props, ["children", "enabled", "transition"]);
 
       return React.createElement(CollapseWrapper, otherProps, children.map(function (child, key) {
         var Element = child.type;
