@@ -1089,87 +1089,123 @@ function (_React$Component) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Collapse).call(this, props));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "setMaxHeight", function (maxHeight) {
-      _this.setState(function () {
-        if (_this.active) return {
-          maxHeight: maxHeight
-        };
-        return {
-          maxHeight: maxHeight,
-          overflow: 'hidden'
-        };
-      }, function () {
-        if (_this.active) {
-          setTimeout(function () {
-            _this.setState({
-              overflow: 'visible'
-            });
-          }, getTransitionTime(_this.props.transition));
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "setOverflow", function (overflow) {
+      if (overflow === 'visible') {
+        _this.timeoutId = setTimeout(function () {
+          _this.setState({
+            overflow: overflow
+          });
+        }, getTransitionTime(_this.props.transition));
+      } else {
+        if (_this.timeoutId) {
+          clearTimeout(_this.timeoutId);
+          _this.timeoutId = undefined;
         }
+
+        _this.setState({
+          overflow: overflow
+        });
+      }
+    });
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "setActive", function (active) {
+      _this.setState(typeof active === 'function' ? active : {
+        active: active
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "setExpander", function () {
-      var children = _this.props.children;
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "getMaxHeight", function () {
+      var initMode = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+      var _this$props = _this.props,
+          children = _this$props.children,
+          value = _this$props.value;
       var maxHeight = {};
-      children.forEach(function (child, key) {
-        if (child.type.styledComponentId === Expander.styledComponentId) {
-          var expander = _this.expanderRefs["".concat(key, "-expander")].current;
 
-          maxHeight["".concat(key, "-expander")] = _this.active ? expander.scrollHeight : 0;
-        }
-      });
+      if (!initMode) {
+        children.forEach(function (child, key) {
+          if (child.type.styledComponentId === Expander.styledComponentId) {
+            var expander = _this.expanderRefs["".concat(key, "-expander")].current;
 
-      _this.setMaxHeight(maxHeight);
+            maxHeight["".concat(key, "-expander")] = _this.state.active ? expander.scrollHeight : 0;
+          }
+        });
+      } else {
+        children.forEach(function (child, key) {
+          if (child.type.styledComponentId === Expander.styledComponentId) {
+            maxHeight["".concat(key, "-expander")] = value ? 99999 : 0;
+          }
+        });
+      }
+
+      return maxHeight;
     });
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleClick", function () {
-      _this.active = !_this.active;
-      var activeCallback = _this.props.activeCallback;
-
-      if (activeCallback) {
-        activeCallback(_this.active);
-      }
-
-      _this.setExpander();
+      _this.setActive(function (prevState) {
+        return {
+          active: !prevState.active
+        };
+      });
     });
 
-    var initActive = props.initActive,
+    var _value = props.value,
         _children = props.children;
-    var _maxHeight = {};
     _this.expanderRefs = {};
-    _this.active = initActive;
+    _this._isMounted = false;
+    _this.state = {
+      overflow: _value ? 'visible' : 'hidden',
+      active: _value
+    };
 
     _children.forEach(function (child, key) {
       if (child.type.styledComponentId === Expander.styledComponentId) {
         _this.expanderRefs["".concat(key, "-expander")] = React.createRef();
-        _maxHeight["".concat(key, "-expander")] = initActive ? 99999 : 0;
       }
     });
 
-    _this.state = {
-      maxHeight: _maxHeight,
-      overflow: initActive ? 'visible' : 'hidden'
-    };
     return _this;
   }
 
   _createClass(Collapse, [{
     key: "componentDidMount",
     value: function componentDidMount() {
-      this.setExpander();
+      this._isMounted = true;
+    }
+  }, {
+    key: "componentDidUpdate",
+    value: function componentDidUpdate(prevProps, prevState) {
+      var prevValue = prevProps.value;
+      var prevActive = prevState.active;
+      var activeCallback = this.props.activeCallback;
+
+      if (prevActive !== this.state.active) {
+        if (activeCallback) activeCallback(this.state.active);
+        this.setOverflow(this.state.active ? 'visible' : 'hidden');
+      }
+
+      if (prevValue !== undefined && prevValue !== this.props.value) {
+        this.setState({
+          active: this.props.value
+        });
+      }
+    }
+  }, {
+    key: "componentWillUnmount",
+    value: function componentWillUnmount() {
+      this._isMounted = false;
     }
   }, {
     key: "render",
     value: function render() {
       var _this2 = this;
 
-      var _this$props = this.props,
-          children = _this$props.children,
-          enabled = _this$props.enabled,
-          transition = _this$props.transition,
-          otherProps = _objectWithoutProperties(_this$props, ["children", "enabled", "transition"]);
+      var _this$props2 = this.props,
+          children = _this$props2.children,
+          enabled = _this$props2.enabled,
+          transition = _this$props2.transition,
+          otherProps = _objectWithoutProperties(_this$props2, ["children", "enabled", "transition"]);
 
+      var maxHeight = this.getMaxHeight(!this._isMounted);
       return React.createElement(CollapseWrapper, otherProps, children.map(function (child, key) {
         var Element = child.type;
 
@@ -1202,7 +1238,7 @@ function (_React$Component) {
               collapseExpanderProps = child.props;
           return React.createElement(CollapseExpander, _extends({}, collapseExpanderProps, {
             enabled: enabled,
-            maxHeight: _this2.state.maxHeight["".concat(key, "-expander")],
+            maxHeight: maxHeight["".concat(key, "-expander")],
             overflow: _this2.state.overflow,
             transition: transition,
             key: "".concat(key, "-expander"),
@@ -1220,14 +1256,14 @@ Collapse.propTypes = {
   activeCallback: propTypes.func,
   children: propTypes.node.isRequired,
   enabled: propTypes.arrayOf(propTypes.bool),
-  initActive: propTypes.bool,
-  transition: propTypes.string
+  transition: propTypes.string,
+  value: propTypes.bool
 };
 Collapse.defaultProps = {
   activeCallback: undefined,
   enabled: [true, true, true],
-  initActive: false,
-  transition: defaultTransition
+  transition: defaultTransition,
+  value: undefined
 };
 Clicker.propTypes = {
   render: propTypes.element

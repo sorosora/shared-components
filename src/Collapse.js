@@ -47,60 +47,90 @@ const CollapseWrapper = styled.div`
 class Collapse extends React.Component {
   constructor(props) {
     super(props);
-    const { initActive, children } = props;
-    const maxHeight = {};
+    const { value, children } = props;
     this.expanderRefs = {};
-    this.active = initActive;
+    this._isMounted = false;
+    this.state = {
+      overflow: value ? 'visible' : 'hidden',
+      active: value,
+    };
     children.forEach((child, key) => {
       if (child.type.styledComponentId === Expander.styledComponentId) {
         this.expanderRefs[`${key}-expander`] = React.createRef();
-        maxHeight[`${key}-expander`] = initActive ? 99999 : 0;
       }
     });
-    this.state = {
-      maxHeight,
-      overflow: initActive ? 'visible' : 'hidden',
-    };
   }
 
   componentDidMount() {
-    this.setExpander();
+    this._isMounted = true;
   }
 
-  setMaxHeight = (maxHeight) => {
-    this.setState(() => {
-      if (this.active) return { maxHeight };
-      return { maxHeight, overflow: 'hidden' };
-    }, () => {
-      if (this.active) {
-        setTimeout(() => {
-          this.setState({
-            overflow: 'visible',
-          });
-        }, getTransitionTime(this.props.transition))
+  componentDidUpdate(prevProps, prevState) {
+    const { value: prevValue } = prevProps;
+    const { active: prevActive } = prevState;
+    const { activeCallback } = this.props;
+
+    if (prevActive !== this.state.active) {
+      if (activeCallback) activeCallback(this.state.active);
+      this.setOverflow(this.state.active ? 'visible' : 'hidden');
+    }
+    if (prevValue !== undefined && prevValue !== this.props.value) {
+      this.setState({
+        active: this.props.value,
+      });
+    }
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
+  setOverflow = (overflow) => {
+    if (overflow === 'visible') {
+      this.timeoutId = setTimeout(() => {
+        this.setState({
+          overflow,
+        });
+      }, getTransitionTime(this.props.transition))
+    } else {
+      if (this.timeoutId) {
+        clearTimeout(this.timeoutId);
+        this.timeoutId = undefined;
       }
-    });
+      this.setState({
+        overflow,
+      });
+    }
   };
 
-  setExpander = () => {
-    const { children } = this.props;
+  setActive = (active) => {
+    this.setState(typeof active === 'function' ? active : { active });
+  };
+
+  getMaxHeight = (initMode = false) => {
+    const { children, value } = this.props;
     const maxHeight = {};
-    children.forEach((child, key) => {
-      if (child.type.styledComponentId === Expander.styledComponentId) {
-        const expander = this.expanderRefs[`${key}-expander`].current;
-        maxHeight[`${key}-expander`] = this.active ? expander.scrollHeight : 0;
-      }
-    });
-    this.setMaxHeight(maxHeight);
+    if (!initMode) {
+      children.forEach((child, key) => {
+        if (child.type.styledComponentId === Expander.styledComponentId) {
+          const expander = this.expanderRefs[`${key}-expander`].current;
+          maxHeight[`${key}-expander`] = this.state.active ? expander.scrollHeight : 0;
+        }
+      });
+    } else {
+      children.forEach((child, key) => {
+        if (child.type.styledComponentId === Expander.styledComponentId) {
+          maxHeight[`${key}-expander`] = value ? 99999 : 0;
+        }
+      });
+    }
+    return maxHeight;
   };
 
   handleClick = () => {
-    this.active = !this.active;
-    const { activeCallback } = this.props;
-    if (activeCallback) {
-      activeCallback(this.active);
-    }
-    this.setExpander();
+    this.setActive(prevState => ({
+      active: !prevState.active,
+    }));
   };
 
   render() {
@@ -110,6 +140,7 @@ class Collapse extends React.Component {
       transition,
       ...otherProps
     } = this.props;
+    const maxHeight = this.getMaxHeight(!this._isMounted);
     return (
       <CollapseWrapper {...otherProps}>
         {
@@ -135,7 +166,7 @@ class Collapse extends React.Component {
                 <CollapseExpander
                   {...collapseExpanderProps}
                   enabled={enabled}
-                  maxHeight={this.state.maxHeight[`${key}-expander`]}
+                  maxHeight={maxHeight[`${key}-expander`]}
                   overflow={this.state.overflow}
                   transition={transition}
                   key={`${key}-expander`}
@@ -154,15 +185,15 @@ Collapse.propTypes = {
   activeCallback: PropTypes.func,
   children: PropTypes.node.isRequired,
   enabled: PropTypes.arrayOf(PropTypes.bool),
-  initActive: PropTypes.bool,
   transition: PropTypes.string,
+  value: PropTypes.bool,
 };
 
 Collapse.defaultProps = {
   activeCallback: undefined,
   enabled: [true , true, true],
-  initActive: false,
   transition: defaultTransition,
+  value: undefined,
 };
 
 Clicker.propTypes = {
