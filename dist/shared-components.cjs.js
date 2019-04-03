@@ -1176,10 +1176,10 @@ function (_React$Component) {
     value: function componentDidUpdate(prevProps, prevState) {
       var prevValue = prevProps.value;
       var prevActive = prevState.active;
-      var activeCallback = this.props.activeCallback;
+      var onChange = this.props.onChange;
 
       if (prevActive !== this.state.active) {
-        if (activeCallback) activeCallback(this.state.active);
+        if (onChange) onChange(this.state.active);
         this.setOverflow(this.state.active ? 'visible' : 'hidden');
       }
 
@@ -1253,14 +1253,14 @@ function (_React$Component) {
 }(React.Component);
 
 Collapse.propTypes = {
-  activeCallback: propTypes.func,
+  onChange: propTypes.func,
   children: propTypes.node.isRequired,
   enabled: propTypes.arrayOf(propTypes.bool),
   transition: propTypes.string,
   value: propTypes.bool
 };
 Collapse.defaultProps = {
-  activeCallback: undefined,
+  onChange: undefined,
   enabled: [true, true, true],
   transition: defaultTransition,
   value: undefined

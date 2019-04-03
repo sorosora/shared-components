@@ -68,10 +68,10 @@ class Collapse extends React.Component {
   componentDidUpdate(prevProps, prevState) {
     const { value: prevValue } = prevProps;
     const { active: prevActive } = prevState;
-    const { activeCallback } = this.props;
+    const { onChange } = this.props;
 
     if (prevActive !== this.state.active) {
-      if (activeCallback) activeCallback(this.state.active);
+      if (onChange) onChange(this.state.active);
       this.setOverflow(this.state.active ? 'visible' : 'hidden');
     }
     if (prevValue !== undefined && prevValue !== this.props.value) {
@@ -182,7 +182,7 @@ class Collapse extends React.Component {
 }
 
 Collapse.propTypes = {
-  activeCallback: PropTypes.func,
+  onChange: PropTypes.func,
   children: PropTypes.node.isRequired,
   enabled: PropTypes.arrayOf(PropTypes.bool),
   transition: PropTypes.string,
@@ -190,7 +190,7 @@ Collapse.propTypes = {
 };
 
 Collapse.defaultProps = {
-  activeCallback: undefined,
+  onChange: undefined,
   enabled: [true , true, true],
   transition: defaultTransition,
   value: undefined,
