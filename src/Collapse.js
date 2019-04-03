@@ -1,5 +1,5 @@
 /**
- * styled-components Collapse@0.3.2 by sorosora
+ * styled-components Collapse@0.4.0 by sorosora
  */
 
 import React from 'react';
