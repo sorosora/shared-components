@@ -11,6 +11,7 @@ const globals = {
 const external = [
   'react',
   'styled-components',
+  'next',
 ];
 
 const plugins = [
