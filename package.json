@@ -36,7 +36,6 @@
     "styled-components": "^4.1.3"
   },
   "peerDependencies": {
-    "next": ">= 6",
     "styled-components": ">= 3"
   },
   "files": [
@@ -45,8 +44,5 @@
   "bugs": {
     "url": "https://github.com/sorosora/shared-components/issues"
   },
-  "homepage": "https://github.com/sorosora/shared-components#readme",
-  "dependencies": {
-    "next": "^8.1.0"
-  }
+  "homepage": "https://github.com/sorosora/shared-components#readme"
 }
